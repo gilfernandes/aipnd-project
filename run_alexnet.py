@@ -1,0 +1,1 @@
+python train.py flowers --arch densenet161 --learning_rate 0.0005 --epochs 3 --hidden_units 500 --gpu
