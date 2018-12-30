@@ -1,0 +1,1 @@
+python train.py flowers --arch vgg19 --learning_rate 0.0004 --epochs 3 --hidden_units 4096 --gpu --save_dir checkpoints
