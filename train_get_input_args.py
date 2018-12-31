@@ -43,6 +43,8 @@ def get_input_args():
                         help='If available then the GPU will be used, else not')
     parser.add_argument('--catnamefile', type=str, default='cat_to_name.json',
                         help='The file containing the mappings of the category id to the actual name with default value \'cat_to_name.json\'')
+    parser.add_argument('--print_every', type=int, default=1,
+                        help='Prints the training loss test loss and accuracy every n steps')
 
     return parser.parse_args()
 

@@ -14,7 +14,7 @@ from torch import nn, optim
 
 class ModelTrainer():
     def __init__(self, model, train_dataloader, validation_dataloader, learning_rate=0.001, epochs=20, gpu=True,
-                 arch='vgg16'):
+                 arch='vgg16', print_every = 1):
         self.model = model
         self.epochs = epochs
         self.gpu = gpu
@@ -24,6 +24,7 @@ class ModelTrainer():
             optim.Adam(model.classifier.parameters(), lr=learning_rate)
         self.train_dataloader = train_dataloader
         self.validation_dataloader = validation_dataloader
+        self.print_every = print_every
 
     def validation(self):
         test_loss = 0
@@ -47,7 +48,7 @@ class ModelTrainer():
             self.model.to('cpu')
 
         steps = 0
-        print_every = 40
+        last_validation_loss = 100.0
         for e in range(self.epochs):
             running_loss = 0
             for ii, (inputs, labels) in enumerate(self.train_dataloader):
@@ -64,7 +65,7 @@ class ModelTrainer():
 
                 running_loss += loss.item()
 
-                if steps % print_every == 0:
+                if steps % self.print_every == 0:
                     # Network is in eval mode for inference
                     self.model.eval()
 
@@ -74,11 +75,14 @@ class ModelTrainer():
 
                     validation_loader_length = len(self.validation_dataloader)
                     print(f"Epoch: {e + 1}/{self.epochs}... ",
-                          f"Training Loss: {running_loss / print_every:.4f} ",
-                          f"Test Loss: {test_loss / validation_loader_length :.3f} ",
-                          f"Test Accuracy: {accuracy / validation_loader_length:.3f}")
+                          f"Training Loss: {running_loss / self.print_every:.4f} ",
+                          f"Validation Loss: {test_loss / validation_loader_length :.3f} ",
+                          f"Validation Accuracy: {accuracy / validation_loader_length:.3f}")
 
                     running_loss = 0
+                    if last_validation_loss < test_loss:
+                        print(f"Validation loss: {test_loss:.3f} WARNING - Loss Increasing from {last_validation_loss:.3f}")
+                    last_validation_loss = test_loss
 
                     # Training is back on
                     self.model.train()
