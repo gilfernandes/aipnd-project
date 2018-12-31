@@ -74,15 +74,16 @@ class ModelTrainer():
                         test_loss, accuracy = self.validation()
 
                     validation_loader_length = len(self.validation_dataloader)
+                    validation_loss = test_loss / validation_loader_length
                     print(f"Epoch: {e + 1}/{self.epochs}... ",
                           f"Training Loss: {running_loss / self.print_every:.4f} ",
-                          f"Validation Loss: {test_loss / validation_loader_length :.3f} ",
+                          f"Validation Loss: {validation_loss:.3f} ",
                           f"Validation Accuracy: {accuracy / validation_loader_length:.3f}")
 
                     running_loss = 0
-                    if last_validation_loss < test_loss:
-                        print(f"Validation loss: {test_loss:.3f} WARNING - Loss Increasing from {last_validation_loss:.3f}")
-                    last_validation_loss = test_loss
+                    if last_validation_loss < validation_loss:
+                        print(f"Validation loss: {validation_loss:.3f} WARNING - Loss Increasing from {last_validation_loss:.3f}")
+                    last_validation_loss = validation_loss
 
                     # Training is back on
                     self.model.train()
